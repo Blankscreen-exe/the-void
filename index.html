@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You vs. The Void</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            flex-direction: column;
+            position: relative;
+            cursor: none;
+        }
+        #message {
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #waiting-message {
+            position: absolute;
+            bottom: 10px;
+            font-size: 12px;
+            opacity: 0;
+            cursor: pointer;
+            //background-size: 200% 100%;
+            //-webkit-background-clip: text;
+            //-webkit-text-fill-color: transparent;
+            animation: shine 1.5s infinite linear;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        $duration: 0.5s;
+        $text-color: rgba(255, 255, 255, 0.3);
+
+        .shine, .chrome {
+        	font-size: 3em;
+        	margin: 0 auto;
+        	margin-bottom: 1em;
+        	font-weight: bold;
+        }
+
+        .shine {
+        	background: #222 -webkit-gradient(linear, left top, right top, from(#222), to(#222), color-stop(0.5, #fff)) 0 0 no-repeat;
+        	-webkit-background-size: 150px;
+        	color: $text-color;
+        	-webkit-background-clip: text;
+        	-webkit-animation-name: shine;
+        	-webkit-animation-duration: $duration;
+        	-webkit-animation-iteration-count: infinite;
+        	text-shadow: 0 0px 0px rgba(255, 255, 255, 0.5);
+        }
+
+        .chrome {
+        	background: #222 -webkit-gradient(linear, left top, right top, from(#222), to(#222), color-stop(0.5, #fff)) 0 0 no-repeat;
+        	background-image: -webkit-linear-gradient(-40deg, transparent 0%, transparent 40%, #fff 50%, transparent 60%, transparent 100%);
+        	-webkit-background-size: 200px;
+        	color: $text-color;
+        	-webkit-background-clip: text;
+        	-webkit-animation-name: shine;
+        	-webkit-animation-duration: $duration;
+        	-webkit-animation-iteration-count: infinite;
+        	text-shadow: 0 0px 0px rgba(255, 255, 255, 0.5);
+        }
+
+        @-webkit-keyframes shine {
+        	0%, 10% {
+        		background-position: -1000px;
+        	}
+        	20% {
+        		background-position: top left;
+        	}
+        	90% {
+        		background-position: top right;
+        	}
+        	100% {
+        		background-position: 1000px;
+        	}
+        }
+
+        .cursor {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(255,255,200,0.8) 10%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: transform 0.05s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="waiting-message" class="shine">Waiting for the Void to answer...</div>
+    <div class="cursor" id="cursor"></div>
+
+    <script>
+        $(document).mousemove(function(event) {
+            $("#cursor").css({
+                left: event.pageX + "px",
+                top: event.pageY + "px"
+            });
+        });
+
+        let lastClickTime = 0;
+        $(document).click(function() {
+            let currentTime = new Date().getTime();
+            if (currentTime - lastClickTime < 1000) {
+                return;
+            }
+            lastClickTime = currentTime;
+
+            let messages = ["You clicked.", "The Void clicks back."];
+            let index = 0;
+
+            let messageDiv = $("<div></div>").addClass("message").text(messages[index]);
+            $("body").append(messageDiv);
+
+            messageDiv.css({
+                position: "absolute",
+                left: event.pageX - (messageDiv.width() / 2) + "px",
+                top: event.pageY - (messageDiv.height() / 2) + "px",
+                opacity: 1,
+                fontSize: "24px",
+                transition: "opacity 0.5s ease-in-out",
+            });
+
+            function showMessage() {
+                let randomDelay = Math.random() * 2000 + 500;
+                messageDiv.text(messages[index]).css("opacity", 1);
+                index==0 && $("#waiting-message").css("opacity", 1);
+                index==1 && $("#waiting-message").css("opacity", 0);
+                setTimeout(() => {
+                    messageDiv.css("opacity", 0);
+                    index++;
+                    if (index < messages.length) {
+                        setTimeout(showMessage, randomDelay);
+                    }
+                }, randomDelay);
+            }
+            showMessage();
+        });
+    </script>
+</body>
+</html>
